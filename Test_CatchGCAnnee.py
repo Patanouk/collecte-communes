@@ -31,7 +31,7 @@ DepMax = 103  # Max 103
 root_directory = os.path.dirname(__file__)
 print("root directory dans Etape0", root_directory)
 
-root_output_directory = '/Users/CetaData-Lainee/Dropbox/P2-Citoyen/8-Data/1-Communes/1-Script/5-Argus_2017_Collecte2021'
+root_output_directory = '.'
 # Output_directory : le sous-répertoire de root_directory où seront enregistrés les rsultats (fochier log, données btutes communes et groupements)
 output_directory = os.path.join(root_output_directory,
                                 'output/' + str(Annee) + '/ScraperResults-Argus-Vtest' + str(Annee))
@@ -336,10 +336,9 @@ def boucle_commune(page: webdriver):
             # print("liste des gc",liste_gc)
             ta = 0
             print()
-            print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc',
-                  Text_gc)  # liste_c_et_gc)
-            print()
-            Vgc = 0
+            if len(liste_c_et_gc) > 0:
+                print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc', Text_gc)  # liste_c_et_gc)
+                print()
             Listegc = []
             if long == 0:
                 tu0 = "na"
@@ -426,19 +425,10 @@ def boucle_commune(page: webdriver):
                         print("ligne de log", logcomm)
                         log.write(logcomm + '\n')
 
-            print(nom_commune, "longueur de liste_c_et_gc", long)
-            for k in range(long):
-                print("element", k, "de la liste c et gc", liste_c_et_gc[k].text)
-                if k > 0:
-                    Text_gc.append(liste_c_et_gc[k].text)
-
             # infos = BeautifulSoup(page.page_source)             # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
             # print("structure des budgets", infos)   # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
             # print("liste des gc",liste_gc)
             ta = 0
-            print()
-            print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc',
-                  Text_gc)  # liste_c_et_gc)
 
             # click_sur_fiche_departement_nomgc(liste_c_et_gc[tu],nmcc,'Groupement')  # tentative de se positionner sur la page de l'année de la communauté de communes visée
 
