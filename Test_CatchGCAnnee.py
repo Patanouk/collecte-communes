@@ -215,9 +215,10 @@ def searchGC(indice, page_start, id_commune, nom_commune, long, tu, pth):
             dispocc = 'N/D'
         else:
             # Sinon, ouvrir la page 'Fiche détaillée'
-            # print('OK GC 1')
-            page_start.find_element_by_xpath(fiche_departement).click()
-            # click_sur_fiche_departement_annee(page)  # ligne ajoutée pour tenter de se positionner sur la bonne année du GC
+            # Ouvre l'annee
+            click_sur_fiche_departement_annee(page, "Groupement de Communes")
+            # Ouvre la page fiche detaille
+            page.find_element_by_xpath(fiche_departement).click()
 
             # Récupération des infos du groupement
             nmcc, idcc, idccnom = identify_groupement_commune(page_start)
@@ -294,6 +295,8 @@ def boucle_commune(page: webdriver):
                 # Sinon, se positionner à l'année souhaitée et ouvrir la page 'Fiche détaillée'
                 # print("exploration par annee")
                 click_sur_fiche_departement_annee(page, "Commmune")
+                # Ouvre la page fiche detaille
+                page.find_element_by_xpath(fiche_departement).click()
 
                 # Enregistrer son contenu dans un fichier nommé
                 # 'NoDépartement-PremiéreLettre-Index' dans le dossier 'Communes'
@@ -526,20 +529,6 @@ def click_sur_fiche_departement_annee(page: webdriver, Niveau):
         if Annee in elem.text:
             elem.click()
             break
-    page.find_element_by_xpath(fiche_departement).click()
-
-
-def click_sur_fiche_departement_annee_GC(page: webdriver, index):
-    elems = page.find_elements_by_xpath("//a[@href]")
-    count = 0
-    for elem in elems:
-        # print("elem:", elem.get_attribute("href"))
-        if Annee in elem.text:
-            if count == index:
-                elem.click()
-                break
-            count = count + 1
-    page.find_element_by_xpath(fiche_departement).click()
 
 
 def get_path_to_chrome_driver() -> str:
