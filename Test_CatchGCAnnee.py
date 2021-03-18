@@ -11,8 +11,6 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 # Commentaires
 
-# Dossier/ données clés
-
 # Année de recherche des données
 Annee = '2017'
 AnneeMax = 2017
@@ -21,9 +19,6 @@ AnneeMin = 2017
 # Choix des départements à scraper. Il y a 102 départements, 97 pour métropole +Corse, et 5 pour les DOM (Guadeloupe, Guyane, Martinique, Réunion, Mayootte)
 DepMin = 1  # Min=1
 DepMax = 103  # Max 103
-
-# Nbre_sans_GC=0
-# Nbre_C=0
 
 # Référencement du répertoire de travail
 
@@ -44,7 +39,6 @@ print()
 # lignes 218-221 écriture du fichier groupement
 
 #  -------- Fonctions auxiliaires et d'analyse des données des pages extraites -------
-
 
 def Norm3(var):
     """
@@ -171,41 +165,15 @@ def identify_groupement_commune(page: webdriver) -> (str, str):
 
 
 # SearchGC : fonction de recherche des coordonnées d'un groupement de communes depuis la page page_start des commune+ goupemments via le chemin pth
-def searchGC(indice, page_start, id_commune, nom_commune, long, tu, pth):
-    # print()
-    # print('entree searchGC',indice)
-    # print('pth', pth, "page de depart",page_start,"donnees d'entree",nmcc, idcc, idcc)
-    # print("dbox",dbox)
-    # print('text page de depart',page_start.text)
-    dom = BeautifulSoup(page_start.page_source)
-    pth_a = dbox + '/tbody/tr[3]/td/div/a'
-    liste_a = page_start.find_elements_by_xpath(pth_a)
-    # print("dans SearchGC, longueur liste_a", len(liste_a),"C et GC")
-    # if len(liste_a)==0:
-    #    pass
-    # else:
-    #    for i in range(len(liste_a)):
-    #        print("elements de liste a", i, liste_a[i].text, "C ou GC")        #liste_a[i])
-    #    print()
-    # print("dom",page_start)
-    # print(dom)
-    # print("searchGC-page", page_start.find_elements_by_xpath(pth),type(page_start.find_elements_by_xpath(pth)),len(page_start.find_elements_by_xpath(pth)))
-    #    for i in range(len(page_start.find_elements_by_xpath(pth))):
-    #        print("searchGC-page element", i, page_start.find_elements_by_xpath(pth)[i].text)
-    # print(dom)
-    # print()
+def searchGC(page_start, id_commune, nom_commune, long, tu, pth):
+
     if page_start.find_elements_by_xpath(pth):
         # ... le suivre
         page_start.find_element_by_xpath(pth).click()
-        # print("page.find GC",page.find_element_by_xpath(pth).text)
+
         # Lecture de la page
         infos = page_start.find_element_by_xpath('//*[@id="donnees"]').text
-        # print()
-        # print("infos")
-        # print(infos)
-        # print()
-        # print("search GC-indice1",nom_commune,"recherche de lien vers cc, infos", infos,"check_"+Annee,infos.find(Annee))
-        # print("search GC-indice1",nom_commune,"check_"+Annee,infos.find(Annee))
+
         # Si la page contient 'non disponibles' ou n'affiche pas les données de l'année
         if (infos.find(Annee) == -1) or (infos.find(u'non disponibles') > -1):
             # Renseigner la variable de disponibilité
@@ -222,22 +190,13 @@ def searchGC(indice, page_start, id_commune, nom_commune, long, tu, pth):
 
             # Récupération des infos du groupement
             nmcc, idcc, idccnom = identify_groupement_commune(page_start)
-            # print('OK GC 2 nmcc',nmcc,'idcc',idcc,'idccnom', idccnom)
-            # print()
             # Enregistrer son contenu dans un fichier nommé
             # 'NoDépartement-Index' dans le dossier 'Groupements'
             with io.open('Groupements/' + idcc + '.html', 'w') as f:
                 f.write(page.page_source)
             with io.open('Groupements/' + idccnom + '.html', 'w') as f:
                 f.write(page.page_source)
-            #################################################
-            # Ici votre code de traitement par CC avec      #
-            # les données de page.page_source
-            #
-            # Get_dataCC(page.page_source)
-            #################################################
             dispocc = 'OK'
-        # print("indice1", nom_commune, "recherche de lien vers cc, infos", infos, "dispocc", dispocc,"check_" + str(Annee))  # ,infos.find(Annee))
     else:
         print("SearchGC-pas de lien vers GC")
         dispocc = "NOK"
@@ -245,24 +204,19 @@ def searchGC(indice, page_start, id_commune, nom_commune, long, tu, pth):
         nmcc = 'N/D'
         idccnom = 'N/D'
     lien2 = [id_commune, idcc, nom_commune, nmcc, long - 1, tu]
-    # print("dans searchGC",nom_commune,"lien2",tu,lien2)
-    # print("fin de searchGC")
-    # print()
     return lien2, nmcc, idcc, idccnom, dispocc
 
 
 def boucle_commune(page: webdriver):
     global reprise, idxcomm, bclc, bclt
-    # print("entree dans boucle communes, 1",reprise, idxcomm, bclc, bclt)
+
     # Calcul du nombre de table(s) dans la page
     nombre_tables = len(page.find_elements_by_xpath(dbox))
-    # print("entree dans boucle communes, reprise :", reprise, "idxcomm",idxcomm, "bclc",bclc, "bclt",bclt,"nbre tables",nombre_tables)
 
     # Boucle des tables
     for index_table in range(bclt, nombre_tables + 1):
         table = page.find_elements_by_xpath(dbox)[index_table - 1]
         nombre_communes = len(table.find_elements_by_class_name('libellepetit'))
-        # print("blcc",bclc,"nombre_communes",nombre_communes)
         # Boucle des communes de la table
         for index_commune in range(bclc, nombre_communes):
             #  Récupération du lien de la commune
@@ -312,13 +266,8 @@ def boucle_commune(page: webdriver):
                 dispo_commune = 'OK'
 
             # Retour à "Choix d'un budget" ("d'une commune ?")
-            # infos = BeautifulSoup(page.page_source)  # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-            # print("page avant structure des budgets",infos)  # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-
             print()
             page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
-            # page_racine=page
-            # print()
             pth_tot = dbox + '/tbody/tr/td/div'
             liste_c_et_gc = page.find_elements_by_xpath(pth_tot)
 
@@ -334,10 +283,6 @@ def boucle_commune(page: webdriver):
                 if k > 0:
                     Text_gc.append(liste_c_et_gc[k].text)
 
-            # infos = BeautifulSoup(page.page_source)             # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-            # print("structure des budgets", infos)   # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-            # print("liste des gc",liste_gc)
-            ta = 0
             print()
             if len(liste_c_et_gc) > 0:
                 print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc', Text_gc)  # liste_c_et_gc)
@@ -362,17 +307,12 @@ def boucle_commune(page: webdriver):
                             print("in - tu0", tu0, "Listegc", Listegc)
                             count = count + 1
                         Vgc = 1
-                        # print('Boucles sur liens, tu', tu, 'ta', ta, 'texte', text, "AnneeCheck",FindGC(text, Annee, AnneeMin, AnneeMax))
             print("tu0", tu0, "Listegc", Listegc)
-            idcc, nmcc, dispocc, idccnom = ('N/D', 'N/D', 'N/D', 'N/D')
             Listelien2 = []
 
             if tu0 == "na":
                 pth = dbox + '/tbody/tr[3]/td/div/a[2]'
-                indice = "na"
-                Nomcc = "N/D"
-                Result, nmcc, idcc, idccnom, dispocc = searchGC(indice, page, id_commune, nom_commune, long, tu0, pth)
-                # print("Check Nom GC",Nomcc,idccnom)
+                Result, nmcc, idcc, idccnom, dispocc = searchGC(page, id_commune, nom_commune, long, tu0, pth)
                 Listelien2.append(Result)
                 # Création des informations de boucle (utiles en cas de reprise)
                 cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
@@ -386,33 +326,20 @@ def boucle_commune(page: webdriver):
                 else:
                     print("ligne de log", logcomm)
                     log.write(logcomm + '\n')
-
-                # print("boucle sur GC-na","Nom",Nomcc,"tu0","na","lien2",Result,"pth",pth)
             else:
                 for k in range(len(Listegc)):
                     # Retour à "Choix d'un budget" ("d'une commune ?")
-                    # page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
                     tx = Listegc[k][0]
                     Nomcc = Listegc[k][1]
                     Lien = Listegc[k][2].find_elements_by_xpath("//a[@href]")
+
                     print("éléments à tester pour trouver la page de la communauté de communes", Lien)
-                    # Ajout de cette ligne pour tester les pages des GC contenant des données de l'année cherchée
-                    # pth = dbox + '/tbody/tr[3]/td/div/a[' + str(int(tu0+1)) + ']'
                     if k > 0:
-                        page.find_element_by_xpath(
-                            '//*[@class="chemincontainer"]/a[3]').click()  # repositionnement sur la page de choix d'un budget pour la commune visée
-                    # dom=BeautifulSoup(page.page_source)
-                    # print()
-                    # print("dom choix d'un budget")
-                    # print()
-                    # print(dom)
-                    # print()
+                        # repositionnement sur la page de choix d'un budget pour la commune visée
+                        page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
+
                     pth = dbox + '/tbody/tr[3]/td/div/a[' + str(2 + tx) + ']'
-                    # print()
-                    # print("boucle sur GC-k",k,"Nom",Nom,"tu0",tx,"lien2","pth",pth)
-                    Result, nmcc, idcc, idccnom, dispocc = searchGC(k, page, id_commune, nom_commune, long, tu0, pth)
-                    # print("Checl Nom GC", Nomcc, idccnom)
-                    # print("Resultat",Result)
+                    Result, nmcc, idcc, idccnom, dispocc = searchGC(page, id_commune, nom_commune, long, tu0, pth)
                     Listelien2.append(Result)
 
                     # Création des informations de boucle (utiles en cas de reprise)
@@ -428,55 +355,6 @@ def boucle_commune(page: webdriver):
                         print("ligne de log", logcomm)
                         log.write(logcomm + '\n')
 
-            # infos = BeautifulSoup(page.page_source)             # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-            # print("structure des budgets", infos)   # ligne ajoutée pour tenter de voir la structure de la page d'accueil des budgets
-            # print("liste des gc",liste_gc)
-            ta = 0
-
-            # click_sur_fiche_departement_nomgc(liste_c_et_gc[tu],nmcc,'Groupement')  # tentative de se positionner sur la page de l'année de la communauté de communes visée
-
-            # Traitement budget groupement
-
-            # print(nom_commune,"lien vers cc", tu0,pth)
-            # print(nom_commune,"recherche de lien vers cc",tu0,page.find_elements_by_xpath(pth))
-
-            # if page.find_elements_by_xpath(pth):
-            #     # ... le suivre
-            #     page.find_element_by_xpath(pth).click()
-            #     # print("page.find GC",page.find_element_by_xpath(pth).text)
-            #     # Lecture de la page
-            #     infos = page.find_element_by_xpath('//*[@id="donnees"]').text
-            #     #print("indice1",nom_commune,"recherche de lien vers cc, infos", infos,"check_"+Annee,infos.find(Annee))
-            #     # Si la page contient 'non disponibles' ou n'affiche
-            #     #   pas les données de l'année
-            #     if (infos.find(Annee) == -1) or (infos.find(u'non disponibles') > -1):
-            #         # Renseigner la variable de disponibilité
-            #         dispocc = 'N/D'
-            #     else:
-            #         # Sinon, ouvrir la page 'Fiche détaillée'
-            #         #print('OK GC 1')
-            #         page.find_element_by_xpath(fiche_departement).click()
-            #         #click_sur_fiche_departement_annee(page)  # ligne ajoutée pour tenter de se positionner sue la bonne année du GC
-            #         print('OK GC 2')
-            #         # Récupération des infos du groupement
-            #         nmcc, idcc,idccnom = identify_groupement_commune(page)
-            #
-            #         # Enregistrer son contenu dans un fichier nommé
-            #         # 'NoDépartement-Index' dans le dossier 'Groupements'
-            #         with io.open('Groupements/' + idcc + '.html', 'w') as f:
-            #             f.write(page.page_source)
-            #         with io.open('Groupements/' + idccnom + '.html', 'w') as f:
-            #             f.write(page.page_source)
-            #         #################################################
-            #         # Ici votre code de traitement par CC avec      #
-            #         # les données de page.page_source
-            #         #
-            #         # Get_dataCC(page.page_source)
-            #         #################################################
-            #         dispocc = 'OK'
-            #     print("indice1", nom_commune, "recherche de lien vers cc, infos", infos, "dispocc",dispocc,"check_" + str(Annee))#,infos.find(Annee))
-            # lien2 = [id_commune, idcc, nom_commune, nmcc, long - 1, tu0]
-            # print("nbre de gc de l'annee :",len(Listelien2))
             try:
                 print("ResCommune", resultat_commune)
             except:
@@ -484,25 +362,12 @@ def boucle_commune(page: webdriver):
             for v in range(len(Listelien2)):
                 print("Listelien2", Listelien2[v])
                 LinkC_GC.writerow(Listelien2[v])
-            # except:
-            #    print('pas de ResCommune', id_commune, idcc)
 
             # Retour à "Choix d'une commune"
             pth = '//*[@class="chemincontainer"]/a[2]'
             if page.find_elements_by_xpath(pth):
                 page.find_element_by_xpath(pth).click()
 
-            # Création des informations de boucle (utiles en cas de reprise)
-            #        cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
-            # Création de la ligne à écrire dans le fichier log.csv
-            #       logcomm = ';'.join((id_commune, nom_commune, dispo_commune,idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
-
-            # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
-            #      if reprise:
-            #          reprise = False
-            #      else:
-            #          print("ligne de log", logcomm)
-            #          log.write(logcomm + '\n')
             # Incrémentation de l'index des communes
             idxcomm += 1
         # Remise à défaut des variables de boucle
