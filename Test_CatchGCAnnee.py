@@ -268,29 +268,29 @@ def boucle_commune(page: webdriver):
             liste_c_et_gc = page.find_elements_by_xpath(pth_tot)
 
             try:
-                long = len(liste_c_et_gc)
+                length_list_commmune_and_groupements = len(liste_c_et_gc)
             except:
-                long = 0
+                length_list_commmune_and_groupements = 0
             Text_gc = []
 
-            print(nom_commune, "longueur de liste_c_et_gc", long)
-            for k in range(long):
+            print(nom_commune, "longueur de liste_c_et_gc", length_list_commmune_and_groupements)
+            for k in range(length_list_commmune_and_groupements):
                 print("element", k, "de la liste c et gc", liste_c_et_gc[k].text, liste_c_et_gc[k])
                 if k > 0:
                     Text_gc.append(liste_c_et_gc[k].text)
 
             print()
             if len(liste_c_et_gc) > 0:
-                print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc',
+                print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", length_list_commmune_and_groupements - 1, 'liste_gc',
                       Text_gc)  # liste_c_et_gc)
                 print()
             Listegc = []
-            if long == 0:
+            if length_list_commmune_and_groupements == 0:
                 tu0 = "na"
                 pass
             else:
                 count = 0
-                for tu in range(1, long):
+                for tu in range(1, length_list_commmune_and_groupements):
                     Liste = liste_c_et_gc[tu].text.split("\n")
                     print("Elément", tu, " de Liste GC", Liste)
                     for text in Liste:
@@ -309,13 +309,13 @@ def boucle_commune(page: webdriver):
 
             if tu0 == "na":
                 pth = dbox + '/tbody/tr[3]/td/div/a[2]'
-                Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, long, tu0, pth)
+                Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, length_list_commmune_and_groupements, tu0, pth)
                 Listelien2.append(Result)
                 # Création des informations de boucle (utiles en cas de reprise)
                 cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
                 # Création de la ligne à écrire dans le fichier log.csv
                 logcomm = ';'.join(
-                    (id_commune, nom_commune, dispo_commune, idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
+                    (id_commune, nom_commune, dispo_commune, idcc, nmcc, dispocc, str(length_list_commmune_and_groupements - 1), str(tu0), cursor))
 
                 # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
                 if reprise:
@@ -336,14 +336,14 @@ def boucle_commune(page: webdriver):
                         page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
 
                     pth = dbox + '/tbody/tr[3]/td/div/a[' + str(2 + tx) + ']'
-                    Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, long, tu0, pth)
+                    Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, length_list_commmune_and_groupements, tu0, pth)
                     Listelien2.append(Result)
 
                     # Création des informations de boucle (utiles en cas de reprise)
                     cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
                     # Création de la ligne à écrire dans le fichier log.csv
                     logcomm = ';'.join(
-                        (id_commune, nom_commune, dispo_commune, idcc, nmcc, dispocc, str(long - 1), str(tu0), cursor))
+                        (id_commune, nom_commune, dispo_commune, idcc, nmcc, dispocc, str(length_list_commmune_and_groupements - 1), str(tu0), cursor))
 
                     # Ne pas écrire la ligne en cas de reprise (elle existe déjà)
                     if reprise:
