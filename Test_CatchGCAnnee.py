@@ -32,27 +32,24 @@ output_directory = os.path.join(root_output_directory,
                                 'output/' + str(Annee) + '/ScraperResults-Argus-Vtest' + str(Annee))
 print("output directory", output_directory)
 
-print()
-
 
 # lignes 289-292 écriture du fichier commune
 # lignes 218-221 écriture du fichier groupement
 
 #  -------- Fonctions auxiliaires et d'analyse des données des pages extraites -------
 
-def Norm3(var):
+def norm_3(var):
     """
     Normalisation d'un nombre entier en chaîne de 3 caractères
     :param var:
     :return:
     """
     if var <= 9:
-        Res = '00' + str(var)
+        return '00' + str(var)
     elif var <= 99:
-        Res = '0' + str(var)
+        return '0' + str(var)
     else:
-        Res = str(min(var, 999))
-    return Res
+        return str(min(var, 999))
 
 
 def clean1(str):
@@ -92,20 +89,20 @@ def get_data_commune(page_source: webdriver) -> str:
     return res
 
 
-def FindGC(Text, Annee, AnneeMin, AnneeMax):
-    Var = 0
-    if Text.find("partir de") > -1:
-        Var = 1
+def find_groupement_communes(text, annee, annee_min, annee_max):
+    var = 0
+    if text.find("partir de") > -1:
+        var = 1
     else:
-        for Year in range(AnneeMin, int(Annee) + 1):
-            if Var == 1:
+        for Year in range(annee_min, int(annee) + 1):
+            if var == 1:
                 pass
-            elif Text.find(str(Year)) > -1:
-                for Year2 in range(int(Annee), AnneeMax + 1):
-                    if Text.find(str(Year2)) > -1:
-                        Var = 1
+            elif text.find(str(Year)) > -1:
+                for Year2 in range(int(annee), annee_max + 1):
+                    if text.find(str(Year2)) > -1:
+                        var = 1
     # print("Search GC",Var,Text)
-    return Var
+    return var
 
 
 def open_main_page(url: str) -> webdriver:
@@ -165,8 +162,7 @@ def identify_groupement_commune(page: webdriver) -> (str, str):
 
 
 # SearchGC : fonction de recherche des coordonnées d'un groupement de communes depuis la page page_start des commune+ goupemments via le chemin pth
-def searchGC(page_start, id_commune, nom_commune, long, tu, pth):
-
+def search_groupement_commune(page_start, id_commune, nom_commune, long, tu, pth):
     if page_start.find_elements_by_xpath(pth):
         # ... le suivre
         page_start.find_element_by_xpath(pth).click()
@@ -285,7 +281,8 @@ def boucle_commune(page: webdriver):
 
             print()
             if len(liste_c_et_gc) > 0:
-                print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc', Text_gc)  # liste_c_et_gc)
+                print(nom_commune, liste_c_et_gc[0].text, "nombre d'éléments GC :", long - 1, 'liste_gc',
+                      Text_gc)  # liste_c_et_gc)
                 print()
             Listegc = []
             if long == 0:
@@ -298,8 +295,8 @@ def boucle_commune(page: webdriver):
                     print("Elément", tu, " de Liste GC", Liste)
                     for text in Liste:
                         print(nom_commune, "GC", text, "Actif " + str(Annee) + " ? : ",
-                              FindGC(text, Annee, AnneeMin, AnneeMax))
-                        if FindGC(text, Annee, AnneeMin, AnneeMax) == 1:
+                              find_groupement_communes(text, Annee, AnneeMin, AnneeMax))
+                        if find_groupement_communes(text, Annee, AnneeMin, AnneeMax) == 1:
                             Listegc.append([count, text, liste_c_et_gc[tu]])
                             tu0 = tu  # sans doute ce tu0 a servi à repérer le bon groupement, mais maintenant il y en a plusieurs
                             print("Valide ", tu, [count, text, liste_c_et_gc[tu]])
@@ -312,7 +309,7 @@ def boucle_commune(page: webdriver):
 
             if tu0 == "na":
                 pth = dbox + '/tbody/tr[3]/td/div/a[2]'
-                Result, nmcc, idcc, idccnom, dispocc = searchGC(page, id_commune, nom_commune, long, tu0, pth)
+                Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, long, tu0, pth)
                 Listelien2.append(Result)
                 # Création des informations de boucle (utiles en cas de reprise)
                 cursor = '-'.join((str(d), str(a), str(index_table), str(index_commune), str(idxcomm)))
@@ -339,7 +336,7 @@ def boucle_commune(page: webdriver):
                         page.find_element_by_xpath('//*[@class="chemincontainer"]/a[3]').click()
 
                     pth = dbox + '/tbody/tr[3]/td/div/a[' + str(2 + tx) + ']'
-                    Result, nmcc, idcc, idccnom, dispocc = searchGC(page, id_commune, nom_commune, long, tu0, pth)
+                    Result, nmcc, idcc, idccnom, dispocc = search_groupement_commune(page, id_commune, nom_commune, long, tu0, pth)
                     Listelien2.append(Result)
 
                     # Création des informations de boucle (utiles en cas de reprise)
