@@ -90,19 +90,16 @@ def get_data_commune(page_source: webdriver) -> str:
 
 
 def find_groupement_communes(text, annee, annee_min, annee_max):
-    var = 0
     if text.find("partir de") > -1:
-        var = 1
+        return True
     else:
         for Year in range(annee_min, int(annee) + 1):
-            if var == 1:
-                pass
-            elif text.find(str(Year)) > -1:
+            if text.find(str(Year)) > -1:
                 for Year2 in range(int(annee), annee_max + 1):
                     if text.find(str(Year2)) > -1:
-                        var = 1
+                        return True
     # print("Search GC",Var,Text)
-    return var
+    return False
 
 
 def open_main_page(url: str) -> webdriver:
@@ -297,14 +294,13 @@ def boucle_commune(page: webdriver):
                         print(nom_commune, "GC", groupement_commune, "Actif " + str(Annee) + " ? : ",
                               find_groupement_communes(groupement_commune, Annee, AnneeMin, AnneeMax))
 
-                        if find_groupement_communes(groupement_commune, Annee, AnneeMin, AnneeMax) == 1:
+                        if find_groupement_communes(groupement_commune, Annee, AnneeMin, AnneeMax):
                             Listegc.append([count, groupement_commune, liste_c_et_gc[tu]])
                             tu0 = tu  # sans doute ce tu0 a servi à repérer le bon groupement, mais maintenant il y en a plusieurs
                             print("Valide ", tu, [count, groupement_commune, liste_c_et_gc[tu]])
                             # ta = 1
                             print("in - tu0", tu0, "Listegc", Listegc)
                             count = count + 1
-                        Vgc = 1
             print("tu0", tu0, "Listegc", Listegc)
             Listelien2 = []
 
@@ -328,7 +324,6 @@ def boucle_commune(page: webdriver):
                 for k in range(len(Listegc)):
                     # Retour à "Choix d'un budget" ("d'une commune ?")
                     tx = Listegc[k][0]
-                    Nomcc = Listegc[k][1]
                     Lien = Listegc[k][2].find_elements_by_xpath("//a[@href]")
 
                     print("éléments à tester pour trouver la page de la communauté de communes", Lien)
