@@ -291,15 +291,16 @@ def boucle_commune(page: webdriver):
             else:
                 count = 0
                 for tu in range(1, length_list_commmune_and_groupements):
-                    Liste = liste_c_et_gc[tu].text.split("\n")
-                    print("Elément", tu, " de Liste GC", Liste)
-                    for text in Liste:
-                        print(nom_commune, "GC", text, "Actif " + str(Annee) + " ? : ",
-                              find_groupement_communes(text, Annee, AnneeMin, AnneeMax))
-                        if find_groupement_communes(text, Annee, AnneeMin, AnneeMax) == 1:
-                            Listegc.append([count, text, liste_c_et_gc[tu]])
+                    list_groupement_commune = liste_c_et_gc[tu].text.split("\n")
+                    print("Elément", tu, " de Liste GC", list_groupement_commune)
+                    for groupement_commune in list_groupement_commune:
+                        print(nom_commune, "GC", groupement_commune, "Actif " + str(Annee) + " ? : ",
+                              find_groupement_communes(groupement_commune, Annee, AnneeMin, AnneeMax))
+
+                        if find_groupement_communes(groupement_commune, Annee, AnneeMin, AnneeMax) == 1:
+                            Listegc.append([count, groupement_commune, liste_c_et_gc[tu]])
                             tu0 = tu  # sans doute ce tu0 a servi à repérer le bon groupement, mais maintenant il y en a plusieurs
-                            print("Valide ", tu, [count, text, liste_c_et_gc[tu]])
+                            print("Valide ", tu, [count, groupement_commune, liste_c_et_gc[tu]])
                             # ta = 1
                             print("in - tu0", tu0, "Listegc", Listegc)
                             count = count + 1
