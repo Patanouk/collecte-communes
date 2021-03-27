@@ -179,6 +179,7 @@ def search_groupement_commune(page_start, id_commune, nom_commune, long, tu, pth
             # Ouvre l'annee
             click_sur_fiche_departement_annee(page, "Groupement de Communes")
             # Ouvre la page fiche detaille
+            print(page.page_source)
             page.find_element_by_xpath(fiche_departement).click()
 
             # Récupération des infos du groupement
